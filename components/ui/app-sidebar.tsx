@@ -6,10 +6,10 @@ import {
   Command,
   IdCard,
   Briefcase,
-  FileText,
-  LayoutDashboard,
-  UsersRound,
-  Activity
+  // FileText,
+  LayoutDashboard
+  // UsersRound,
+  // Activity
 } from 'lucide-react'
 import { NavMain } from '@/components/ui/nav-main'
 import { NavUser } from '@/components/ui/nav-user'
