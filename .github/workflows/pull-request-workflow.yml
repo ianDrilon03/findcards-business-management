@@ -1,6 +1,6 @@
-name: Ticket Management app github actions based on pull request
+name: Find-cards Business Management app github actions based on pull request
 
-run-name: Ticket Management pull request CI/CD pipeline
+run-name: Find-cards Business Management pull request CI/CD pipeline
 
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
