@@ -26,15 +26,12 @@ interface BusinessDetails {
   businessInformation: BusinesInformation | null
   personalDetails: PersonalDetails | null
   step: Steps
-  setBusinessInfo: (businessInformation: BusinesInformation) => void
-  setPersonalDetails: (personalDetails: PersonalDetails) => void
-  setPrevious: () => void
+  setBusinessInfo?: (businessInformation: BusinesInformation) => void
+  setPersonalDetails?: (personalDetails: PersonalDetails) => void
+  setPrevious?: () => void
 }
 
-const initialState: Omit<
-  BusinessDetails,
-  'setBusinessInfo' | 'setPersonalDetails' | 'setPrevious'
-> = {
+const initialState: BusinessDetails = {
   businessInformation: {
     name: '',
     address: '',
@@ -74,23 +71,14 @@ export const useBusinessDetails = create<BusinessDetails>()(
           }))
         },
         setPrevious: () => {
-          set(
-            (
-              state: Omit<
-                BusinessDetails,
-                'setBusinessInfo' | 'setPersonalDetails' | 'setPrevious'
-              >
-            ) => {
-              return {
-                ...state,
-                businessInformation: {
-                  ...state?.businessInformation,
-                  image: null
-                },
-                step: 'business-info'
-              }
-            }
-          )
+          set((state: BusinessDetails) => ({
+            ...state,
+            businessInformation: {
+              ...(state?.businessInformation as BusinesInformation),
+              image: null
+            },
+            step: 'business-info'
+          }))
         }
       }),
       {

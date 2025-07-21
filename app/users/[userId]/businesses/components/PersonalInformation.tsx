@@ -77,7 +77,11 @@ export const PersonalInformation = (): JSX.Element => {
           previous
         </Button>
 
-        <CustomButton type='button' onClick={handleSubmit(onSubmit)}>
+        <CustomButton
+          type='button'
+          onClick={handleSubmit(onSubmit)}
+          isLoading={isPending}
+        >
           Submit
         </CustomButton>
       </div>

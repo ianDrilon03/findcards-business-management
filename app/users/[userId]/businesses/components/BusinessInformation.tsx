@@ -21,8 +21,13 @@ export const BusinessInformation = (): JSX.Element => {
     handleSubmit,
     reset,
     clearErrors,
-    control
+    control,
+    watch
   } = useForm<BusinesInformation>()
+
+  const image = watch('image')
+
+  console.log(image)
 
   const onSubmit = (data: BusinesInformation): void => {
     startTransition(() => {
@@ -127,6 +132,7 @@ export const BusinessInformation = (): JSX.Element => {
             title='Image photo'
             pendingFiles={value as File[]}
             isLoading={isPending}
+            acceptedImageCount={1}
             setPendingFiles={(value) => onChange(value)}
           />
         )}
