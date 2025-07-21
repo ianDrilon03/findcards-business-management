@@ -6,6 +6,7 @@ CREATE TABLE users (
     gender text CHECK (gender IN ('male', 'female', 'others')),
     address text,
     phone text,
+    avatar text,
     role TEXT NOT NULL CHECK (role IN ('admin', 'developer', 'user')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP

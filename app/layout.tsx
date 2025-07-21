@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   description: 'FC Business Management'
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children
 }: Readonly<{
   children: React.ReactNode

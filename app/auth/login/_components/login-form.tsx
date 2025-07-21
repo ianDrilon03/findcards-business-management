@@ -78,7 +78,7 @@ export function LoginForm({
         return
       }
 
-      router.push(`/backend/${userId}/dashboard`)
+      router.push(`/backend/${userId}/businesses`)
     })
   }
 

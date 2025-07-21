@@ -42,13 +42,7 @@ export async function updateSession(request: NextRequest) {
 
   const baseAdminURL = `/backend/${user?.id}`
 
-  const protectedAdminRoutes = [
-    'dashboard',
-    'users',
-    'projects',
-    'tickets',
-    'settings'
-  ]
+  const protectedAdminRoutes = ['dashboard', 'businesses']
 
   const isProtected = protectedAdminRoutes.some((route) =>
     pathname.endsWith(route)
