@@ -29,6 +29,7 @@ interface BusinessDetails {
   setBusinessInfo?: (businessInformation: BusinesInformation) => void
   setPersonalDetails?: (personalDetails: PersonalDetails) => void
   setPrevious?: () => void
+  reset?: () => void
 }
 
 const initialState: BusinessDetails = {
@@ -79,6 +80,9 @@ export const useBusinessDetails = create<BusinessDetails>()(
             },
             step: 'business-info'
           }))
+        },
+        reset: () => {
+          set(initialState)
         }
       }),
       {
