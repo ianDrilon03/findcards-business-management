@@ -1,4 +1,5 @@
 import { createServerClient } from '@supabase/ssr'
+import { UserRound } from 'lucide-react'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function updateSession(request: NextRequest) {
@@ -40,15 +41,16 @@ export async function updateSession(request: NextRequest) {
     data: { user }
   } = await supabase.auth.getUser()
 
-  const baseAdminURL = `/backend/${user?.id}`
+  const { data: userData } = await supabase
+    .from('users')
+    .select('role, name, gender, address, phone')
+    .eq('id', user?.id)
+    .single()
 
-  const protectedAdminRoutes = [
-    'dashboard',
-    'users',
-    'projects',
-    'tickets',
-    'settings'
-  ]
+  const baseAdminURL = `/backend/${user?.id}`
+  // const baseUserURL = `/users/${user?.id}`
+
+  const protectedAdminRoutes = ['dashboard', 'businesses']
 
   const isProtected = protectedAdminRoutes.some((route) =>
     pathname.endsWith(route)
@@ -58,9 +60,15 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(new URL('/auth/login', request.url))
   }
 
-  if (user && pathname === '/auth/login') {
+  // if (userData?.role === 'user' && user && pathname.endsWith('businesses')) {
+  //   return NextResponse.redirect(
+  //     new URL(`${baseUserURL}/businesses`, request.url)
+  //   )
+  // }
+
+  if (user && pathname === '/auth/login' && userData?.role === 'admin') {
     return NextResponse.redirect(
-      new URL(`${baseAdminURL}/dashboard`, request.url)
+      new URL(`${baseAdminURL}/businesses`, request.url)
     )
   }
 

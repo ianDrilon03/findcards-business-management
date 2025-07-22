@@ -6,21 +6,48 @@ CREATE TABLE users (
     gender text CHECK (gender IN ('male', 'female', 'others')),
     address text,
     phone text,
+    avatar text,
     role TEXT NOT NULL CHECK (role IN ('admin', 'developer', 'user')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL
+);
+
+CREATE TABLE category(
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+  archived_at TIMESTAMP WITH TIME ZONE DEFAULT NULL
 );
 
 CREATE TABLE businesses (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID REFERENCES users(id),
     name TEXT NOT NULL,
     address TEXT NOT NULL,
     phone TEXT NOT NULL,
+    email TEXT NOT NULL,
+    website TEXT NOT NULL,
+    region TEXT NOT NULL,
+    abn_acn TEXT NOT NULL,
+    social_media TEXT NOT NULL,
+    image TEXT,
     status TEXT DEFAULT 'unverified' CHECK (status IN ('unverified', 'verified')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    archived_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL
+);
+
+CREATE TABLE business_personal_details (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  business_id UUID REFERENCES businesses(id),
+  referred_by UUID REFERENCES users(id),
+  category_id UUID REFERENCES category(id),
+  first_name TEXT NOT NULL,
+  last_name TEXT NOT NULL,
+  phone TEXT NOT NULL,
+  personal_email TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+  archived_at TIMESTAMP WITH TIME ZONE DEFAULT NULL
 );
 
 CREATE TABLE user_credits (
@@ -35,14 +62,52 @@ CREATE TABLE prizes (
     status TEXT DEFAULT 'draft' CHECK (status IN ('published', 'draft')),
     claimed_by UUID REFERENCES users(id),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    archived_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+    archived_at TIMESTAMP WITH TIME ZONE DEFAULT NULL
 );
 
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE businesses ENABLE ROW LEVEL SECURITY;
 ALTER TABLE prizes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_credits ENABLE ROW LEVEL SECURITY;
+ALTER TABLE business_personal_details ENABLE ROW LEVEL SECURITY;
+ALTER TABLE category ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY category_read ON category
+  FOR SELECT
+  USING(archived_at IS NULL);
+
+
+CREATE POLICY category_write ON category
+  FOR INSERT
+  WITH CHECK (true);
+
+CREATE POLICY category_update ON category
+  FOR UPDATE
+  USING(true);
+
+
+CREATE POLICY business_personal_details_read ON business_personal_details
+  FOR SELECT
+  USING (
+    auth.uid() = referred_by AND
+    EXISTS (
+      SELECT 1
+      FROM businesses
+      WHERE businesses.id = business_personal_details.business_id
+    ) AND archived_at IS NULL
+  );
+
+
+CREATE POLICY business_personal_details_write ON business_personal_details
+  FOR INSERT
+  TO AUTHENTICATED
+  WITH CHECK (auth.uid() = referred_by);
+
+CREATE POLICY business_personal_details_edit ON business_personal_details
+  FOR UPDATE
+  TO AUTHENTICATED
+  WITH CHECK (auth.uid() = referred_by);
 
 CREATE POLICY businesses_read ON businesses
     FOR SELECT
@@ -52,8 +117,7 @@ CREATE POLICY businesses_read ON businesses
 CREATE POLICY businesses_create ON businesses
     FOR INSERT
     TO AUTHENTICATED
-    WITH CHECK (auth.uid() = user_id);
-
+    WITH CHECK (true);
 
 CREATE POLICY businesses_admin_update ON businesses
     FOR UPDATE
@@ -62,6 +126,11 @@ CREATE POLICY businesses_admin_update ON businesses
          FROM auth.users users_1
         WHERE (users_1.id = auth.uid())))::text = 'admin'::text) 
     );
+
+CREATE POLICY businesses_delete ON businesses 
+  FOR DELETE
+  TO AUTHENTICATED
+  USING (true);
 
 CREATE POLICY user_credits_access ON user_credits
     FOR SELECT
@@ -74,7 +143,7 @@ CREATE POLICY prizes_read ON prizes
     USING (
       (((SELECT users_1.role
          FROM auth.users users_1
-        WHERE (users_1.id = auth.uid())))::text = 'admin'::text) 
+        WHERE (users_1.id = auth.uid())))::text = 'admin'::text) AND archived_at IS null
     );
 
 CREATE POLICY prizes_insert ON prizes
@@ -128,6 +197,12 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+
+
+CREATE TRIGGER update_businesses_details_updated_at
+    BEFORE UPDATE ON business_personal_details
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at();
 
 CREATE TRIGGER update_businesses_updated_at
     BEFORE UPDATE ON businesses
@@ -206,7 +281,7 @@ CREATE TRIGGER on_auth_user_created
     FOR EACH ROW
     EXECUTE FUNCTION public.handle_new_user();
 
-CREATE INDEX idx_businesses_user_id ON businesses(user_id);
+CREATE INDEX idx_businesses_details_reffered_by ON business_personal_details(referred_by);
 CREATE INDEX idx_prizes_claimed_by ON prizes(claimed_by);
 CREATE INDEX idx_businesses_name ON businesses(name);
 CREATE INDEX idx_prizes_name ON prizes(name);
