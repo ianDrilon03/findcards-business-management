@@ -13,4 +13,9 @@ export interface User {
   status: 'active' | 'pending_invite'
 }
 
+export type UserCredits = {
+  credits: number
+  users: User
+}
+
 export type UserType = Pick<User, 'id' | 'email' | 'avatar'>

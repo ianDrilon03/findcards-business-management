@@ -1,17 +1,19 @@
+'use client'
+
 import { JSX } from 'react'
 import { Plus } from 'lucide-react'
-import { AddBusinessDialog } from './AddBusinessDialog'
+import { useBusinessDetails } from '@/service/business'
 import { Button } from '@/components/ui/button'
 
-export const BusinessAction = (): JSX.Element => {
+export function BusinessAction(): JSX.Element {
+  const toggleOpen = useBusinessDetails((state) => state.toggleOpenDialog)
+
   return (
     <div className='text-right'>
-      <AddBusinessDialog>
-        <Button className='cursor-pointer'>
-          <Plus />
-          Add Business
-        </Button>
-      </AddBusinessDialog>
+      <Button className='cursor-pointer' onClick={() => toggleOpen?.(true)}>
+        <Plus />
+        Add Business
+      </Button>
     </div>
   )
 }

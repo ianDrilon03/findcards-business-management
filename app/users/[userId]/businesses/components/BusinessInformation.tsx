@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { BusinesInformation } from '@/service/business'
 import { useBusinessDetails } from '@/service/business'
 
-export const BusinessInformation = (): JSX.Element => {
+export function BusinessInformation(): JSX.Element {
   const [mount, setMount] = useState<boolean>(true)
   const [isPending, startTransition] = useTransition()
 
@@ -21,13 +21,8 @@ export const BusinessInformation = (): JSX.Element => {
     handleSubmit,
     reset,
     clearErrors,
-    control,
-    watch
+    control
   } = useForm<BusinesInformation>()
-
-  const image = watch('image')
-
-  console.log(image)
 
   const onSubmit = (data: BusinesInformation): void => {
     startTransition(() => {
@@ -49,7 +44,7 @@ export const BusinessInformation = (): JSX.Element => {
     if (mount) {
       updateState()
     }
-  }, [state, mount])
+  }, [state, mount, reset])
 
   return (
     <div className='space-y-2'>
@@ -114,7 +109,7 @@ export const BusinessInformation = (): JSX.Element => {
         <Input
           type='link'
           title='Social Media Link'
-          {...register('socialMedia', {
+          {...register('social_media', {
             required: 'Required field.',
             pattern: {
               value: linkRegex,
@@ -146,14 +141,25 @@ export const BusinessInformation = (): JSX.Element => {
         })}
       />
 
-      <Input
-        title='Phone'
-        hasError={!!errors.phone}
-        errorMessage={errors.phone?.message}
-        {...register('phone', {
-          required: 'Required field.'
-        })}
-      />
+      <div className='grid grid-cols-2 gap-2'>
+        <Input
+          title='Phone'
+          hasError={!!errors.phone}
+          errorMessage={errors.phone?.message}
+          {...register('phone', {
+            required: 'Required field.'
+          })}
+        />
+
+        <Input
+          title='ABN/ACN'
+          hasError={!!errors.abn_acn}
+          errorMessage={errors.abn_acn?.message}
+          {...register('abn_acn', {
+            required: 'Required field.'
+          })}
+        />
+      </div>
 
       <div className='flex items-center justify-end gap-2'>
         <CustomButton

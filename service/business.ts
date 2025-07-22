@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { persist, devtools, createJSONStorage } from 'zustand/middleware'
+import { persist, createJSONStorage } from 'zustand/middleware'
 
 type Steps = 'business-info' | 'personal-info'
 
@@ -11,7 +11,7 @@ export interface BusinesInformation {
   website: string
   region: string
   abn_acn: string
-  socialMedia: string
+  social_media: string
   image: File[] | null
 }
 
@@ -19,17 +19,20 @@ export interface PersonalDetails {
   firstName: string
   lastName: string
   phone: string
-  email: string
+  personalEmail: string
+  category_id: string
 }
 
-interface BusinessDetails {
+export interface BusinessDetails {
   businessInformation: BusinesInformation | null
   personalDetails: PersonalDetails | null
   step: Steps
+  open: boolean
   setBusinessInfo?: (businessInformation: BusinesInformation) => void
   setPersonalDetails?: (personalDetails: PersonalDetails) => void
   setPrevious?: () => void
   reset?: () => void
+  toggleOpenDialog?: (isOpen: boolean) => void
 }
 
 const initialState: BusinessDetails = {
@@ -41,54 +44,60 @@ const initialState: BusinessDetails = {
     website: '',
     region: '',
     abn_acn: '',
-    socialMedia: '',
+    social_media: '',
     image: null
   },
   personalDetails: {
     firstName: '',
     lastName: '',
     phone: '',
-    email: ''
+    personalEmail: '',
+    category_id: ''
   },
-  step: 'business-info'
+  step: 'business-info',
+  open: false
 }
 
 export const useBusinessDetails = create<BusinessDetails>()(
-  devtools(
-    persist(
-      (set) => ({
-        ...initialState,
-        setBusinessInfo: (businessInformation: BusinesInformation) => {
-          set({
-            businessInformation,
-            personalDetails: null,
-            step: 'personal-info'
-          })
-        },
-        setPersonalDetails: (personalDetails: PersonalDetails) => {
-          set((state: BusinessDetails) => ({
-            businessInformation: state.businessInformation,
-            personalDetails: personalDetails
-          }))
-        },
-        setPrevious: () => {
-          set((state: BusinessDetails) => ({
-            ...state,
-            businessInformation: {
-              ...(state?.businessInformation as BusinesInformation),
-              image: null
-            },
-            step: 'business-info'
-          }))
-        },
-        reset: () => {
-          set(initialState)
-        }
-      }),
-      {
-        name: 'use-business-details',
-        storage: createJSONStorage(() => sessionStorage)
+  persist(
+    (set) => ({
+      ...initialState,
+      setBusinessInfo: (businessInformation: BusinesInformation) => {
+        set({
+          businessInformation,
+          personalDetails: null,
+          step: 'personal-info'
+        })
+      },
+      setPersonalDetails: (personalDetails: PersonalDetails) => {
+        set((state: BusinessDetails) => ({
+          businessInformation: state.businessInformation,
+          personalDetails: personalDetails
+        }))
+      },
+      toggleOpenDialog: (isOpen: boolean) => {
+        set((state) => ({
+          ...state,
+          open: isOpen
+        }))
+      },
+      setPrevious: () => {
+        set((state: BusinessDetails) => ({
+          ...state,
+          businessInformation: {
+            ...(state?.businessInformation as BusinesInformation),
+            image: null
+          },
+          step: 'business-info'
+        }))
+      },
+      reset: () => {
+        set(initialState)
       }
-    )
+    }),
+    {
+      name: 'use-business-details',
+      storage: createJSONStorage(() => sessionStorage)
+    }
   )
 )

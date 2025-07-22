@@ -2,13 +2,13 @@
 
 import * as React from 'react'
 import {
-  AudioWaveform,
-  Command,
-  IdCard,
+  // AudioWaveform,
+  // Command,
+  // IdCard,
   Briefcase,
-  Users,
+  Users
   // FileText,
-  LayoutDashboard
+  // LayoutDashboard
   // UsersRound,
   // Activity
 } from 'lucide-react'
@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/sidebar'
 import { useUser } from '@/context/AuthProvider'
 import { appName } from '@/helpers/constants'
-import { User } from '@supabase/supabase-js'
+// import { User } from '@supabase/supabase-js'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const userData = useUser()
