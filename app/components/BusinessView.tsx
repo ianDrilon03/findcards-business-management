@@ -1,4 +1,6 @@
 import { JSX } from 'react'
+import { Button } from '@/components/ui/button'
+import { Phone } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Image from 'next/image'
 
@@ -16,10 +18,17 @@ export function BusinessView(): JSX.Element {
         />
 
         <CardContent className='pb-4 pt-2'>
-          <section>
-            <CardTitle className='text-2xl'>Ocean View Restaurant</CardTitle>
-            <span className='text-sm text-gray-500'>Health and Fitness</span>
-          </section>
+          <div className='flex items-center justify-between'>
+            <section>
+              <CardTitle className='text-2xl'>Ocean View Restaurant</CardTitle>
+              <span className='text-sm text-gray-500'>Health and Fitness</span>
+            </section>
+
+            <Button type='button' className='cursor-pointer'>
+              <Phone />
+              Contact Business
+            </Button>
+          </div>
 
           <main></main>
         </CardContent>
