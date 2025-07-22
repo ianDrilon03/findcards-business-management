@@ -141,6 +141,7 @@ export function LoginForm({
             </div>
             <CustomButton
               isLoading={isPending}
+              disabled={isPending}
               type='submit'
               className='w-full cursor-pointer'
             >
