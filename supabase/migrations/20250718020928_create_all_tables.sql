@@ -75,6 +75,7 @@ ALTER TABLE category ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY category_read ON category
   FOR SELECT
+  TO AUTHENTICATED
   USING(archived_at IS NULL);
 
 
@@ -85,6 +86,14 @@ CREATE POLICY category_write ON category
 CREATE POLICY category_update ON category
   FOR UPDATE
   USING(true);
+
+CREATE POLICY business_personal_details_read_all ON business_personal_details
+  FOR ALL
+  USING (
+    (( SELECT users_1.role
+     FROM users users_1
+    WHERE (users_1.id = auth.uid())) = 'admin'::text) AND archived_at IS NULL
+  );
 
 
 CREATE POLICY business_personal_details_read ON business_personal_details
@@ -107,7 +116,11 @@ CREATE POLICY business_personal_details_write ON business_personal_details
 CREATE POLICY business_personal_details_edit ON business_personal_details
   FOR UPDATE
   TO AUTHENTICATED
-  WITH CHECK (auth.uid() = referred_by);
+  USING(
+    ((( SELECT users_1.role
+     FROM users users_1
+    WHERE (users_1.id = auth.uid())) = 'admin'::text) AND (archived_at IS NULL))
+  );
 
 CREATE POLICY businesses_read ON businesses
     FOR SELECT
@@ -123,7 +136,7 @@ CREATE POLICY businesses_admin_update ON businesses
     FOR UPDATE
     USING (
       (((SELECT users_1.role
-         FROM auth.users users_1
+         FROM public.users users_1
         WHERE (users_1.id = auth.uid())))::text = 'admin'::text) 
     );
 
@@ -222,11 +235,11 @@ CREATE TRIGGER update_users_updated_at
     EXECUTE FUNCTION update_updated_at();
 
 -- Create function to increment credits
-CREATE OR REPLACE FUNCTION increment_user_credits(user_id UUID)
+CREATE OR REPLACE FUNCTION increment_user_credits(id UUID)
 RETURNS VOID AS $$
 BEGIN
     INSERT INTO user_credits (user_id, credits)
-    VALUES (user_id, 1)
+    VALUES (id, 1)
     ON CONFLICT (user_id)
     DO UPDATE SET credits = user_credits.credits + 1;
 END;

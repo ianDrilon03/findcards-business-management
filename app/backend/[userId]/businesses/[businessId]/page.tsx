@@ -15,7 +15,8 @@ export default async function ({
     .from('business_personal_details')
     .select(
       `id, first_name, last_name, personal_email, phone, 
-      businesses(id, name, address, phone, address, image, status, email, website, region, social_media ), 
+      referred_by(id),
+      businesses(id, name, address, phone, address, image, status, email, website, region, social_media), 
       category(name)`
     )
     .order('created_at', { ascending: false })
@@ -27,5 +28,5 @@ export default async function ({
     throw error.message
   }
 
-  return <BusinessView {...data} />
+  return <BusinessView {...data} businessId={businessId} />
 }
