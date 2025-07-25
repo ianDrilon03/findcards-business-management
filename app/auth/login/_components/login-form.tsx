@@ -78,7 +78,7 @@ export function LoginForm({
         return
       }
 
-      router.push(`/backend/${userId}/dashboard`)
+      router.push(`/backend/${userId}/businesses`)
     })
   }
 
@@ -141,6 +141,7 @@ export function LoginForm({
             </div>
             <CustomButton
               isLoading={isPending}
+              disabled={isPending}
               type='submit'
               className='w-full cursor-pointer'
             >

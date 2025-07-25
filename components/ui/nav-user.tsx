@@ -16,7 +16,7 @@ import {
   SidebarMenuItem,
   useSidebar
 } from '@/components/ui/sidebar'
-import { createClient } from '@/config/client'
+import { signOut } from '@/supabase/db/authClient'
 import { avatarName } from '@/helpers/avatarName'
 import { usePathname } from 'next/navigation'
 import { permanentRedirect } from 'next/navigation'
@@ -32,17 +32,6 @@ export function NavUser({
   const { isMobile } = useSidebar()
   const pathname = usePathname()
   const baseUrl = pathname.split('/')
-  const supabase = createClient()
-
-  const signOut = async (): Promise<void> => {
-    const { error } = await supabase.auth.signOut()
-
-    if (error) {
-      throw error.message
-    }
-
-    permanentRedirect('/auth/login')
-  }
 
   const redirectSettings = (): void => {
     permanentRedirect(

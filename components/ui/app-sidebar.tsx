@@ -2,12 +2,13 @@
 
 import * as React from 'react'
 import {
-  AudioWaveform,
-  Command,
-  IdCard,
+  // AudioWaveform,
+  // Command,
+  // IdCard,
   Briefcase,
+  Users
   // FileText,
-  LayoutDashboard
+  // LayoutDashboard
   // UsersRound,
   // Activity
 } from 'lucide-react'
@@ -22,6 +23,8 @@ import {
   SidebarRail
 } from '@/components/ui/sidebar'
 import { useUser } from '@/context/AuthProvider'
+import { appName } from '@/helpers/constants'
+// import { User } from '@supabase/supabase-js'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const userData = useUser()
@@ -32,34 +35,24 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       email: userData?.user?.email as string,
       avatar: ''
     },
-    teams: [
-      {
-        name: 'FC Businesses Management',
-        logo: IdCard,
-        plan: userData?.user?.email as string
-      },
-      {
-        name: 'Acme Corp.',
-        logo: AudioWaveform,
-        plan: 'Startup'
-      },
-      {
-        name: 'Evil Corp.',
-        logo: Command,
-        plan: 'Free'
-      }
-    ],
+    teams: appName(userData?.user?.email as string),
     navMain: [
-      {
-        title: 'Dashboard',
-        url: `/backend/${userData?.user?.id}/dashboard`,
-        icon: LayoutDashboard,
-        isActive: true
-      },
+      // {
+      //   title: 'Dashboard',
+      //   url: `/backend/${userData?.user?.id}/dashboard`,
+      //   icon: LayoutDashboard,
+      //   isActive: true
+      // },
       {
         title: 'Businesses',
         url: `/backend/${userData?.user?.id}/businesses`,
         icon: Briefcase,
+        isActive: true
+      },
+      {
+        title: 'Users',
+        url: `/backend/${userData?.user?.id}/users`,
+        icon: Users,
         isActive: true
       }
       // {

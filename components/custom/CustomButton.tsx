@@ -25,7 +25,12 @@ export function CustomButton({
   ...props
 }: ButtonTypes) {
   return (
-    <Button className={className} variant={variant} size={size} {...props}>
+    <Button
+      className={`${className} cursor-pointer`}
+      variant={variant}
+      size={size}
+      {...props}
+    >
       {isLoading && <Loader2Icon className='animate-spin' />}
       {children}
     </Button>
