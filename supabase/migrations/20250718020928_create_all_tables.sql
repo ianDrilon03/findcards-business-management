@@ -73,6 +73,15 @@ ALTER TABLE user_credits ENABLE ROW LEVEL SECURITY;
 ALTER TABLE business_personal_details ENABLE ROW LEVEL SECURITY;
 ALTER TABLE category ENABLE ROW LEVEL SECURITY;
 
+CREATE POLICY category_read_all ON category 
+  FOR ALL
+  TO AUTHENTICATED
+  USING(
+    ((( SELECT users_1.role
+     FROM users users_1
+    WHERE (users_1.id = auth.uid())) = 'admin'::text) AND (archived_at IS NULL))
+  );
+
 CREATE POLICY category_read ON category
   FOR SELECT
   TO AUTHENTICATED
@@ -89,11 +98,7 @@ CREATE POLICY category_update ON category
 
 CREATE POLICY business_personal_details_read_all ON business_personal_details
   FOR ALL
-  USING (
-    (( SELECT users_1.role
-     FROM users users_1
-    WHERE (users_1.id = auth.uid())) = 'admin'::text) AND archived_at IS NULL
-  );
+  USING (true);
 
 
 CREATE POLICY business_personal_details_read ON business_personal_details
@@ -122,6 +127,20 @@ CREATE POLICY business_personal_details_edit ON business_personal_details
     WHERE (users_1.id = auth.uid())) = 'admin'::text) AND (archived_at IS NULL))
   );
 
+
+CREATE POLICY businesses_read_all ON businesses
+    FOR ALL
+    TO AUTHENTICATED
+    USING (
+        (( SELECT users_1.role
+         FROM users users_1
+        WHERE (users_1.id = auth.uid())) = 'admin'::text)
+      ) WITH CHECK(
+        (( SELECT users_1.role
+         FROM users users_1
+        WHERE (users_1.id = auth.uid())) = 'admin'::text)
+    );
+
 CREATE POLICY businesses_read ON businesses
     FOR SELECT
     TO AUTHENTICATED
@@ -149,6 +168,15 @@ CREATE POLICY user_credits_access ON user_credits
     FOR SELECT
     TO AUTHENTICATED
     USING (auth.uid() = user_id);
+
+CREATE POLICY user_credits_admin_access ON user_credits
+    FOR ALL
+    TO AUTHENTICATED
+    USING(
+      (((SELECT users_1.role
+         FROM public.users users_1
+        WHERE (users_1.id = auth.uid())))::text = 'admin'::text) 
+    );
 
 CREATE POLICY prizes_read ON prizes
     FOR SELECT
@@ -238,10 +266,15 @@ CREATE TRIGGER update_users_updated_at
 CREATE OR REPLACE FUNCTION increment_user_credits(id UUID)
 RETURNS VOID AS $$
 BEGIN
-    INSERT INTO user_credits (user_id, credits)
-    VALUES (id, 1)
-    ON CONFLICT (user_id)
-    DO UPDATE SET credits = user_credits.credits + 1;
+ UPDATE user_credits SET credits = user_credits.credits + 1 WHERE user_credits.user_id = id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create function to decrement credits
+CREATE OR REPLACE FUNCTION decrement_user_credits(id UUID)
+RETURNS VOID AS $$
+BEGIN
+ UPDATE user_credits SET credits = user_credits.credits - 1 WHERE user_credits.user_id = id;
 END;
 $$ LANGUAGE plpgsql;
 

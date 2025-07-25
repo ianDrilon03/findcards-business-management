@@ -3,7 +3,7 @@ import { createClient } from '@/config'
 import { BusinessDetailsDB } from '@/lib/types/business'
 import { BusinessView } from '@/app/components/BusinessView'
 
-export default async function ({
+export default async function ViewBusiness({
   params
 }: {
   params: Promise<{ businessId: string }>
@@ -20,6 +20,7 @@ export default async function ({
       category(name)`
     )
     .order('created_at', { ascending: false })
+    .is('archived_at', null)
     .eq('id', businessId)
     .single()
     .returns<BusinessDetailsDB>()

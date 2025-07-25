@@ -13,6 +13,7 @@ export default async function BusinessesPage(): Promise<JSX.Element> {
       `id, businesses(id, name, address, phone, address, image, status), category(name)`
     )
     .order('created_at', { ascending: false })
+    .is('archived_at', null)
     .returns<Pick<BusinessDetailsDB, 'businesses' | 'category' | 'id'>[]>()
 
   if (error) {

@@ -23,10 +23,14 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { avatarName } from '@/helpers/avatarName'
 import { BusinessDetailsDB } from '@/lib/types/business'
-import { permanentRedirect, usePathname, useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { archiveBusiness, verifiedBusiness } from '@/supabase/db/business'
+import {
+  archiveBusiness,
+  unverifiedBusiness,
+  verifiedBusiness
+} from '@/supabase/db/business'
 import { useAlertDialog } from '@/service/alert-dialog'
 import { useShallow } from 'zustand/react/shallow'
 import { DialogAlert } from '@/components/custom/DialogAlert'
@@ -67,12 +71,24 @@ export function BusinessView({
     })
   }
 
+  const onUnVerified = async (): Promise<void> => {
+    startTransition(async () => {
+      await unverifiedBusiness(businesses.id, referredBy?.id as string)
+      state.toggleOpen?.(false, null)
+      router.refresh()
+    })
+  }
+
   const onArchive = async (): Promise<void> => {
     startTransition(async () => {
       await archiveBusiness(businessId as string)
-      permanentRedirect(pathname)
+      state.toggleOpen?.(false, null)
+      router.refresh()
+      router.back()
     })
   }
+
+  const isVerified = businesses.status === 'verified'
 
   return (
     <>
@@ -119,7 +135,7 @@ export function BusinessView({
                           onClick={() => state.toggleOpen?.(true, 'verified')}
                         >
                           <VerifiedIcon />
-                          Verifiy
+                          {!isVerified ? 'Verify' : 'Unverify'}
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() =>
@@ -200,9 +216,9 @@ export function BusinessView({
       </Card>
       <DialogAlert
         open={state.open && state.type === 'verified'}
-        title='Verified Business'
-        description='Do you want to verify this business?'
-        callback={onVerifiy}
+        title={isVerified ? 'Unverified Business' : 'Verified Business'}
+        description={`Do you want to ${isVerified ? 'unverified' : 'verify'} this business?`}
+        callback={isVerified ? onUnVerified : onVerifiy}
         cancel={() => state.toggleOpen?.(false, null)}
         isLoading={isPending}
         type='success'
