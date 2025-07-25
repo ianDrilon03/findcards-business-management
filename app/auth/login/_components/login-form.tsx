@@ -47,13 +47,14 @@ export function LoginForm({
         .eq('id', userId)
         .single()
 
+      if (error || !data.session) {
+        setMessage(error?.message as string)
+        return
+      }
+
       if (userError) {
         await supabase.auth.signOut()
         throw userError.message
-      }
-
-      if (error || !data.session) {
-        setMessage(error?.message as string)
       }
 
       // const userDatas = {

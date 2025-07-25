@@ -2,6 +2,7 @@ import { JSX } from 'react'
 import { createClient } from '@/config'
 import { Container } from '@/components/custom/Container'
 import { UsersTable } from './components/UserTable'
+import { AddUserDialog } from './components/AddUserDialog'
 
 export default async function Users(): Promise<JSX.Element> {
   const supabase = await createClient()
@@ -22,6 +23,7 @@ export default async function Users(): Promise<JSX.Element> {
       description='You can manage users here (e.g, revoke, reinstate, ban, edit)'
     >
       <UsersTable user={data} />
+      <AddUserDialog />
     </Container>
   )
 }
