@@ -1,5 +1,4 @@
 import { createServerClient } from '@supabase/ssr'
-import { UserRound } from 'lucide-react'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function updateSession(request: NextRequest) {
@@ -8,7 +7,7 @@ export async function updateSession(request: NextRequest) {
   })
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  const key = process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY
 
   if (!url || !key) {
     throw new Error(
@@ -50,7 +49,7 @@ export async function updateSession(request: NextRequest) {
   const baseAdminURL = `/backend/${user?.id}`
   // const baseUserURL = `/users/${user?.id}`
 
-  const protectedAdminRoutes = ['dashboard', 'businesses']
+  const protectedAdminRoutes = ['dashboard', 'businesses', 'users']
 
   const isProtected = protectedAdminRoutes.some((route) =>
     pathname.endsWith(route)

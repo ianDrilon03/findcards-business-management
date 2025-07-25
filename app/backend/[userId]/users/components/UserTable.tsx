@@ -34,10 +34,10 @@ import { Switch } from '@/components/ui/switch'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { User } from '@/lib/types/user'
-import { AddUserDialog } from './AddUserDialog'
 import { avatarName } from '@/helpers/avatarName'
 import { updateRole } from '@/supabase/db/authClient'
 import { useRouter } from 'next/navigation'
+import { useCreateUserDialog } from '@/service/create-user-dialog'
 
 type UserData = Omit<User, 'password'>
 
@@ -53,6 +53,9 @@ export function UsersTable({ user: data }: UserTableData) {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+  const toggleOpenDialog = useCreateUserDialog(
+    (state) => state.toggleOpenDialog
+  )
 
   const router = useRouter()
 
@@ -217,9 +220,9 @@ export function UsersTable({ user: data }: UserTableData) {
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
-          <AddUserDialog>
-            <Button>Register</Button>
-          </AddUserDialog>
+          <Button type='button' onClick={() => toggleOpenDialog?.(true)}>
+            Register
+          </Button>
         </div>
       </div>
       <div className='rounded-md border'>

@@ -32,8 +32,6 @@ export const updateUser = async (
 
     if (error) {
       await removeImage(image, supabase, `${userId}/${data.name}`, 'avatars')
-
-      console.info(error.message)
       throw error.message
     }
 
@@ -65,28 +63,6 @@ export const updateRole = async (
 
     toast('Successfully', {
       description: 'Successfuly change role'
-    })
-  } catch (error) {
-    throw error
-  }
-}
-
-export const registerUser = async (data: UserForm): Promise<void> => {
-  try {
-    const { email, password } = data
-    const supabase = createClient()
-
-    const { error } = await supabase.auth.signUp({
-      email,
-      password: password as string
-    })
-
-    if (error) {
-      throw error
-    }
-
-    toast('Successfully', {
-      description: 'Successfully registered users'
     })
   } catch (error) {
     throw error
