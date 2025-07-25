@@ -71,3 +71,118 @@ export const addBusinessInfo = async (
     throw error
   }
 }
+
+export const unverifiedBusiness = async (
+  businessId: string,
+  userId: string
+): Promise<void> => {
+  try {
+    const supabase = createClient()
+
+    const { error: referredError } = await supabase.rpc(
+      'decrement_user_credits',
+      {
+        id: userId
+      }
+    )
+
+    if (referredError) {
+      toast.error('ERROR!', {
+        description: 'Something went wrong'
+      })
+      throw referredError?.message
+    }
+
+    const { error } = await supabase
+      .from('businesses')
+      .update({
+        status: 'unverified'
+      })
+      .eq('id', businessId)
+
+    if (error) {
+      toast.error('ERROR!', {
+        description: 'Something went wrong'
+      })
+      throw error.message
+    }
+
+    toast('Successfully', {
+      description: 'Successfully unverified business.'
+    })
+  } catch (error) {
+    throw error
+  }
+}
+
+export const verifiedBusiness = async (
+  businessId: string,
+  userId: string
+): Promise<void> => {
+  try {
+    const supabase = createClient()
+
+    const { error: referredError } = await supabase.rpc(
+      'increment_user_credits',
+      {
+        id: userId
+      }
+    )
+
+    if (referredError) {
+      toast.error('ERROR!', {
+        description: 'Something went wrong'
+      })
+      throw referredError?.message
+    }
+
+    const { error } = await supabase
+      .from('businesses')
+      .update({
+        status: 'verified'
+      })
+      .eq('id', businessId)
+
+    if (error) {
+      toast.error('ERROR!', {
+        description: 'Something went wrong'
+      })
+      throw error.message
+    }
+
+    toast('Successfully', {
+      description: 'Successfully verified business.'
+    })
+  } catch (error) {
+    throw error
+  }
+}
+
+export const archiveBusiness = async (
+  personalBusinessId: string
+): Promise<void> => {
+  try {
+    const supabase = createClient()
+    const today = new Date()
+
+    const { error } = await supabase
+      .from('business_personal_details')
+      .update({
+        archived_at: today
+      })
+      .eq('id', personalBusinessId)
+
+    if (error) {
+      toast.error('ERROR!', {
+        description: 'Something went wrong'
+      })
+      throw error.message
+    }
+
+    toast('Successfully', {
+      description: 'Successfully remove business'
+    })
+  } catch (error) {
+    throw error
+  }
+}
