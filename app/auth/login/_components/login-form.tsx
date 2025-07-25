@@ -83,8 +83,6 @@ export function LoginForm({
     })
   }
 
-  console.log(message)
-
   return (
     <FormProvider {...form}>
       <form onSubmit={handleSubmit(onSubmit)}>
