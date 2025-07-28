@@ -79,7 +79,7 @@ CREATE POLICY category_read_all ON category
   USING(
     ((( SELECT users_1.role
      FROM users users_1
-    WHERE (users_1.id = auth.uid())) = 'admin'::text) AND (archived_at IS NULL))
+    WHERE (users_1.id = auth.uid())) = 'admin'::text))
   );
 
 CREATE POLICY category_read ON category
@@ -90,11 +90,19 @@ CREATE POLICY category_read ON category
 
 CREATE POLICY category_write ON category
   FOR INSERT
-  WITH CHECK (true);
+  WITH CHECK (
+     (( SELECT users_1.role
+       FROM users users_1
+      WHERE (users_1.id = auth.uid())) = 'admin'::text)
+  );
 
 CREATE POLICY category_update ON category
   FOR UPDATE
-  USING(true);
+  USING(
+    (( SELECT users_1.role
+     FROM users users_1
+    WHERE (users_1.id = auth.uid())) = 'admin'::text)
+  );
 
 CREATE POLICY business_personal_details_read_all ON business_personal_details
   FOR ALL
