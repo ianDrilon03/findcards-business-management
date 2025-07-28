@@ -30,8 +30,7 @@ import { useRouter } from 'next/navigation'
 import { useShallow } from 'zustand/react/shallow'
 import { PrizesForm } from '@/lib/types/prizes'
 import { User } from '@supabase/supabase-js'
-
-const status = ['published', 'draft']
+import { prizesStatus } from '../helpers/constant'
 
 export function AddPrizesDialog(): JSX.Element {
   const router = useRouter()
@@ -129,7 +128,7 @@ export function AddPrizesDialog(): JSX.Element {
                   <SelectValue placeholder='Select Status' />
                 </SelectTrigger>
                 <SelectContent>
-                  {status.map((item, index) => (
+                  {prizesStatus.map((item, index) => (
                     <SelectItem key={`${item}-${index}`} value={item}>
                       {item}
                     </SelectItem>

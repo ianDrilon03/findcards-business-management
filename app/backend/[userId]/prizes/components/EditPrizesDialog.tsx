@@ -9,6 +9,14 @@ import {
   DialogTitle,
   DialogClose
 } from '@/components/ui/dialog'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
+import { ImageUpload } from '@/components/custom/ImageUpload'
 import { editCategory } from '@/supabase/db/category'
 import { useCreatePrizesDialog } from '@/service/create-prizes-dialog'
 import { useForm } from 'react-hook-form'
@@ -17,6 +25,10 @@ import { Button } from '@/components/ui/button'
 import { CustomButton } from '@/components/custom/CustomButton'
 import { useRouter } from 'next/navigation'
 import { useShallow } from 'zustand/react/shallow'
+import { PrizesForm } from '@/lib/types/prizes'
+import { Controller } from 'react-hook-form'
+import { Label } from '@/components/ui/label'
+import { prizesStatus } from '../helpers/constant'
 
 export function EditPrizesDialog(): JSX.Element {
   const router = useRouter()
@@ -25,7 +37,7 @@ export function EditPrizesDialog(): JSX.Element {
   const {
     open,
     toggleOpen,
-    data: categoryData
+    data: prizesData
   } = useCreatePrizesDialog(
     useShallow((state) => ({
       open: state.open,
@@ -38,8 +50,9 @@ export function EditPrizesDialog(): JSX.Element {
     handleSubmit,
     register,
     reset,
-    formState: { errors }
-  } = useForm<{ name: string }>()
+    formState: { errors },
+    control
+  } = useForm<PrizesForm>()
 
   const resetVariable = (): void => {
     reset({
@@ -53,20 +66,23 @@ export function EditPrizesDialog(): JSX.Element {
     startTransition(async () => {
       const { name } = data
 
-      await editCategory(name, categoryData?.id as string)
+      await editCategory(name, prizesData?.id as string)
       resetVariable()
     })
   }
 
   useEffect(() => {
-    if (!!categoryData) {
+    if (!!prizesData) {
       reset({
-        name: categoryData?.name as string
+        name: prizesData?.name as string,
+        status: prizesData?.status,
+        credit_cost: prizesData?.creditCost.toString(),
+        image: prizesData?.image
       })
     }
-  }, [reset, categoryData])
+  }, [reset, prizesData])
 
-  const isOpen = open && !!categoryData?.name
+  const isOpen = open && !!prizesData?.name
 
   return (
     <Dialog open={isOpen} onOpenChange={() => toggleOpen?.(false, null)}>
@@ -74,14 +90,74 @@ export function EditPrizesDialog(): JSX.Element {
         <DialogHeader>
           <DialogTitle>Edit Prize</DialogTitle>
         </DialogHeader>
-        <Input
-          title='Category'
-          {...register('name', {
-            required: 'Field is required.'
-          })}
-          hasError={!!errors.name}
-          errorMessage={errors.name?.message}
-        />
+        <div className='grid grid-cols-2 gap-2'>
+          <Input
+            title='Name'
+            {...register('name', {
+              required: 'Field is required.'
+            })}
+            hasError={!!errors.name}
+            errorMessage={errors.name?.message}
+          />
+
+          <Input
+            title='Credit Cost'
+            type='number'
+            {...register('credit_cost', {
+              required: 'Field is required.'
+            })}
+            hasError={!!errors.credit_cost}
+            errorMessage={errors.credit_cost?.message}
+          />
+        </div>
+
+        <div className='space-y-2'>
+          <Label className='text-sm font-medium mb-1.5'>Status</Label>
+          <Controller
+            name='status'
+            control={control}
+            render={({ field: { onChange, value } }) => (
+              <Select
+                value={value as string}
+                onValueChange={(e) => onChange(e)}
+              >
+                <SelectTrigger className='w-full'>
+                  <SelectValue placeholder='Select Status' />
+                </SelectTrigger>
+                <SelectContent>
+                  {prizesStatus.map((item, index) => (
+                    <SelectItem key={`${item}-${index}`} value={item}>
+                      {item}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          />
+          {!!errors.status && (
+            <h1 className='text-sm text-red-500'>{errors.status.message}</h1>
+          )}
+        </div>
+
+        <div className='space-y-2'>
+          <Controller
+            name='image'
+            control={control}
+            render={({ field: { onChange, value } }) => (
+              <ImageUpload
+                filePreview={typeof value === 'string' ? value : undefined}
+                title='Image'
+                pendingFiles={value as File[]}
+                isLoading={isPending}
+                acceptedImageCount={1}
+                setPendingFiles={(value) => onChange(value)}
+              />
+            )}
+          />
+          {!!errors.image && (
+            <h1 className='text-sm text-red-500'>{errors.image.message}</h1>
+          )}
+        </div>
 
         <DialogFooter>
           <DialogClose asChild>
