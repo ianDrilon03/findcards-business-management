@@ -7,7 +7,8 @@ import {
   // IdCard,
   Briefcase,
   Users,
-  VectorSquare
+  VectorSquare,
+  Trophy
   // FileText,
   // LayoutDashboard
   // UsersRound,
@@ -60,6 +61,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         title: 'Category',
         url: `/backend/${userData?.user?.id}/category`,
         icon: VectorSquare,
+        isActive: true
+      },
+      {
+        title: 'Prizes',
+        url: `/backend/${userData?.user?.id}/prizes`,
+        icon: Trophy,
         isActive: true
       }
       // {

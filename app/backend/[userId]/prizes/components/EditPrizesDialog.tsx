@@ -10,7 +10,7 @@ import {
   DialogClose
 } from '@/components/ui/dialog'
 import { editCategory } from '@/supabase/db/category'
-import { useCreateCategoryDialog } from '@/service/create-categories-dialog'
+import { useCreatePrizesDialog } from '@/service/create-prizes-dialog'
 import { useForm } from 'react-hook-form'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -18,7 +18,7 @@ import { CustomButton } from '@/components/custom/CustomButton'
 import { useRouter } from 'next/navigation'
 import { useShallow } from 'zustand/react/shallow'
 
-export function EditCategoryDialog(): JSX.Element {
+export function EditPrizesDialog(): JSX.Element {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
 
@@ -26,7 +26,7 @@ export function EditCategoryDialog(): JSX.Element {
     open,
     toggleOpen,
     data: categoryData
-  } = useCreateCategoryDialog(
+  } = useCreatePrizesDialog(
     useShallow((state) => ({
       open: state.open,
       data: state.data,
@@ -72,7 +72,7 @@ export function EditCategoryDialog(): JSX.Element {
     <Dialog open={isOpen} onOpenChange={() => toggleOpen?.(false, null)}>
       <DialogContent className='sm:max-w-[40rem]'>
         <DialogHeader>
-          <DialogTitle>Edit Category</DialogTitle>
+          <DialogTitle>Edit Prize</DialogTitle>
         </DialogHeader>
         <Input
           title='Category'

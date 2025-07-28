@@ -37,18 +37,19 @@ import {
   TableRow
 } from '@/components/ui/table'
 import { format } from 'date-fns'
+import { Badge } from '@/components/ui/badge'
 import { archivedCategory } from '@/supabase/db/category'
 import { DialogAlert } from '@/components/custom/DialogAlert'
 import { Button } from '@/components/ui/button'
-import { useCreateCategoryDialog } from '@/service/create-categories-dialog'
-import { CategoryDB } from '@/lib/types/category'
+import { useCreatePrizesDialog } from '@/service/create-prizes-dialog'
 import { useShallow } from 'zustand/react/shallow'
+import { PrizesTable } from '@/lib/types/prizes'
 
-interface CategoryTableData {
-  category: CategoryDB[]
+interface PrizesTableType {
+  prizes: PrizesTable[]
 }
 
-export function CategoryTable({ category: data }: CategoryTableData) {
+export function PrizeTable({ prizes: data }: PrizesTableType) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -61,7 +62,7 @@ export function CategoryTable({ category: data }: CategoryTableData) {
     data: categoryData,
     open,
     toggleOpenDialog
-  } = useCreateCategoryDialog(
+  } = useCreatePrizesDialog(
     useShallow((state) => ({
       data: state.data,
       open: state.open,
@@ -69,13 +70,15 @@ export function CategoryTable({ category: data }: CategoryTableData) {
     }))
   )
 
+  console.log(data)
+
   const onArchiveCategory = async (): Promise<void> => {
     startTransition(async () => {
       await archivedCategory(categoryData?.id as string)
     })
   }
 
-  const columns: ColumnDef<CategoryDB>[] = React.useMemo(
+  const columns: ColumnDef<PrizesTable>[] = React.useMemo(
     () => [
       {
         accessorKey: 'name',
@@ -89,6 +92,29 @@ export function CategoryTable({ category: data }: CategoryTableData) {
             </div>
           )
         }
+      },
+      {
+        accessorKey: 'claimed_by',
+        header: 'Claimed By',
+        cell: function ({ row }) {
+          return <div>{row.original.claimed_by?.email ?? 'N/A'}</div>
+        }
+      },
+      {
+        accessorKey: 'credit_cost',
+        header: 'Credit Cost',
+        cell: ({ row }) => (
+          <Badge className='lowercase'>{row.getValue('credit_cost')}</Badge>
+        )
+      },
+      {
+        accessorKey: 'status',
+        header: 'Status',
+        cell: ({ row }) => (
+          <Badge className='lowercase' variant='secondary'>
+            {row.getValue('status')}
+          </Badge>
+        )
       },
       {
         accessorKey: 'created_at',
@@ -175,7 +201,7 @@ export function CategoryTable({ category: data }: CategoryTableData) {
     <div className='w-full'>
       <div className='flex items-center py-4'>
         <Input
-          placeholder='Search category name...'
+          placeholder='Search prizes name...'
           value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
             table.getColumn('name')?.setFilterValue(event.target.value)
@@ -216,7 +242,7 @@ export function CategoryTable({ category: data }: CategoryTableData) {
             onClick={() => toggleOpenDialog?.(true, null)}
           >
             <PlusIcon />
-            Add Category
+            Add Prizes
           </Button>
         </div>
       </div>
@@ -292,8 +318,8 @@ export function CategoryTable({ category: data }: CategoryTableData) {
       </div>
       <DialogAlert
         open={open && !categoryData?.name}
-        title='Remove Category'
-        description='Do you want to remove this category?'
+        title='Remove Prizes'
+        description='Do you want to remove this prizes?'
         callback={onArchiveCategory}
         cancel={() => toggleOpenDialog?.(false, null)}
         isLoading={isPending}

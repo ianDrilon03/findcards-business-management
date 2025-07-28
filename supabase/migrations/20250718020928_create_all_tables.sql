@@ -59,6 +59,7 @@ CREATE TABLE prizes (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT NOT NULL,
     credit_cost INTEGER NOT NULL DEFAULT 5,
+    image TEXT,
     status TEXT DEFAULT 'draft' CHECK (status IN ('published', 'draft')),
     claimed_by UUID REFERENCES users(id),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -66,12 +67,28 @@ CREATE TABLE prizes (
     archived_at TIMESTAMP WITH TIME ZONE DEFAULT NULL
 );
 
+ INSERT INTO storage.buckets (id, name, public, file_size_limit)
+        VALUES ('business', 'business', TRUE, 5242880); -- 5MB limit
+
+ INSERT INTO storage.buckets (id, name, public, file_size_limit)
+        VALUES ('prizes', 'prizes', TRUE, 5242880); -- 5MB limit
+
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE businesses ENABLE ROW LEVEL SECURITY;
 ALTER TABLE prizes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_credits ENABLE ROW LEVEL SECURITY;
 ALTER TABLE business_personal_details ENABLE ROW LEVEL SECURITY;
 ALTER TABLE category ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Upload Select business " ON storage.objects FOR SELECT TO public USING (bucket_id = 'business');
+CREATE POLICY "Upload Insert business" ON storage.objects FOR INSERT TO public WITH CHECK (bucket_id = 'business');
+CREATE POLICY "Upload Update business" ON storage.objects FOR UPDATE TO public USING (bucket_id = 'business');
+CREATE POLICY "Upload Delete business" ON storage.objects FOR DELETE TO public USING (bucket_id = 'business');
+
+CREATE POLICY "Upload Select prizes " ON storage.objects FOR SELECT TO public USING (bucket_id = 'prizes');
+CREATE POLICY "Upload Insert prizes" ON storage.objects FOR INSERT TO public WITH CHECK (bucket_id = 'prizes');
+CREATE POLICY "Upload Update prizes" ON storage.objects FOR UPDATE TO public USING (bucket_id = 'prizes');
+CREATE POLICY "Upload Delete prizes" ON storage.objects FOR DELETE TO public USING (bucket_id = 'prizes');
 
 CREATE POLICY category_read_all ON category 
   FOR ALL
@@ -186,13 +203,21 @@ CREATE POLICY user_credits_admin_access ON user_credits
         WHERE (users_1.id = auth.uid())))::text = 'admin'::text) 
     );
 
+
+CREATE POLICY prizes_read_all ON prizes
+  FOR ALL
+  TO AUTHENTICATED
+  USING(
+    ((( SELECT users_1.role
+     FROM users users_1
+    WHERE (users_1.id = auth.uid())) = 'admin'::text))
+  );
+
 CREATE POLICY prizes_read ON prizes
     FOR SELECT
     TO AUTHENTICATED
     USING (
-      (((SELECT users_1.role
-         FROM auth.users users_1
-        WHERE (users_1.id = auth.uid())))::text = 'admin'::text) AND archived_at IS null
+      archived_at IS NULL
     );
 
 CREATE POLICY prizes_insert ON prizes
