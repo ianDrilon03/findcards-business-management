@@ -8,6 +8,7 @@ type PrizesDialog = {
   name: string | null
   status: PrizesType
   creditCost: number
+  image: string | File[] | null
 }
 
 export interface CreateAlertDialog {

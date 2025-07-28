@@ -12,7 +12,7 @@ export default async function PrizesPage(): Promise<JSX.Element> {
   const { data, error } = await supabase
     .from('prizes')
     .select(
-      'id, claimed_by:users(name, email, gender, address, phone, avatar), name, credit_cost, status, created_at, updated_at'
+      'id, claimed_by:users(name, email, gender, address, phone, avatar), name, image, credit_cost, status, created_at, updated_at'
     )
     .returns<PrizesTable[]>()
 

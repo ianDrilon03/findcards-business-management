@@ -17,9 +17,12 @@ export const addPrize = async (
       `${userId}/${name}`
     )
 
-    const { error } = await supabase
-      .from('prizes')
-      .insert({ ...data, image: imageUrls[0] })
+    const newData = {
+      ...data,
+      image: imageUrls[0]
+    }
+
+    const { error } = await supabase.from('prizes').insert(newData)
 
     if (error) {
       await removeImage(image as File[], supabase, `${userId}/${name}`)

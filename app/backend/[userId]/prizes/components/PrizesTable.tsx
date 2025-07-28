@@ -36,6 +36,7 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
+import { Avatar, AvatarImage } from '@/components/ui/avatar'
 import { format } from 'date-fns'
 import { Badge } from '@/components/ui/badge'
 import { archivedCategory } from '@/supabase/db/category'
@@ -70,8 +71,6 @@ export function PrizeTable({ prizes: data }: PrizesTableType) {
     }))
   )
 
-  console.log(data)
-
   const onArchiveCategory = async (): Promise<void> => {
     startTransition(async () => {
       await archivedCategory(categoryData?.id as string)
@@ -86,6 +85,13 @@ export function PrizeTable({ prizes: data }: PrizesTableType) {
         cell: function ({ row }) {
           return (
             <div className='flex items-center gap-2'>
+              <Avatar>
+                <AvatarImage
+                  className='object-cover'
+                  src={row.original?.image as string}
+                  alt={row.original?.name}
+                />
+              </Avatar>
               <div className='capitalize font-semibold'>
                 {row.getValue('name')}
               </div>
@@ -155,7 +161,10 @@ export function PrizeTable({ prizes: data }: PrizesTableType) {
                 onClick={() =>
                   toggleOpenDialog?.(true, {
                     id: row.original.id,
-                    name: row.original.name
+                    name: row.original.name,
+                    status: row.original.status,
+                    creditCost: Number(row.original.credit_cost),
+                    image: row.original.image as string
                   })
                 }
               >
@@ -164,7 +173,13 @@ export function PrizeTable({ prizes: data }: PrizesTableType) {
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() =>
-                  toggleOpenDialog?.(true, { id: row.original.id, name: null })
+                  toggleOpenDialog?.(true, {
+                    id: row.original.id,
+                    name: null,
+                    status: null,
+                    image: null,
+                    creditCost: 0
+                  })
                 }
               >
                 <Trash />

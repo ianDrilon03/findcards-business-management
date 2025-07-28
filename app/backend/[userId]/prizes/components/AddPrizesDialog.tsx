@@ -106,6 +106,7 @@ export function AddPrizesDialog(): JSX.Element {
 
           <Input
             title='Credit Cost'
+            type='number'
             {...register('credit_cost', {
               required: 'Field is required.'
             })}
@@ -120,7 +121,10 @@ export function AddPrizesDialog(): JSX.Element {
             name='status'
             control={control}
             render={({ field: { onChange, value } }) => (
-              <Select value={value} onValueChange={(e) => onChange(e)}>
+              <Select
+                value={value as string}
+                onValueChange={(e) => onChange(e)}
+              >
                 <SelectTrigger className='w-full'>
                   <SelectValue placeholder='Select Status' />
                 </SelectTrigger>

@@ -207,11 +207,7 @@ CREATE POLICY user_credits_admin_access ON user_credits
 CREATE POLICY prizes_read_all ON prizes
   FOR ALL
   TO AUTHENTICATED
-  USING(
-    ((( SELECT users_1.role
-     FROM users users_1
-    WHERE (users_1.id = auth.uid())) = 'admin'::text))
-  );
+  USING(true);
 
 CREATE POLICY prizes_read ON prizes
     FOR SELECT

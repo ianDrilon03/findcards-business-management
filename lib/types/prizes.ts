@@ -1,13 +1,13 @@
 import { User } from './user'
 
-export type PrizesType = 'published' | 'draft'
+export type PrizesType = 'published' | 'draft' | null
 
 export interface PrizesDB {
   id: string
   name: string
   credit_cost: string
   status: PrizesType
-  image: File[] | string
+  image: File[] | string | null
   claimed_by: User
   created_at: string
   updated_at: string

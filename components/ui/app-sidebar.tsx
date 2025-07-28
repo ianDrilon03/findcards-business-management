@@ -52,12 +52,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         isActive: true
       },
       {
-        title: 'Users',
-        url: `/backend/${userData?.user?.id}/users`,
-        icon: Users,
-        isActive: true
-      },
-      {
         title: 'Category',
         url: `/backend/${userData?.user?.id}/category`,
         icon: VectorSquare,
@@ -67,6 +61,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         title: 'Prizes',
         url: `/backend/${userData?.user?.id}/prizes`,
         icon: Trophy,
+        isActive: true
+      },
+      {
+        title: 'Users',
+        url: `/backend/${userData?.user?.id}/users`,
+        icon: Users,
         isActive: true
       }
       // {
