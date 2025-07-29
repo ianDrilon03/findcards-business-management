@@ -72,7 +72,7 @@ export function EditCategoryDialog(): JSX.Element {
     <Dialog open={isOpen} onOpenChange={() => toggleOpen?.(false, null)}>
       <DialogContent className='sm:max-w-[40rem]'>
         <DialogHeader>
-          <DialogTitle>Edit New Category</DialogTitle>
+          <DialogTitle>Edit Category</DialogTitle>
         </DialogHeader>
         <Input
           title='Category'

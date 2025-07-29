@@ -85,26 +85,6 @@ export const ImageUpload = ({
     <div className='space-y-4'>
       <Label className='text-sm font-medium mb-1.5'>{title}</Label>
       <div className='flex flex-wrap gap-4'>
-        {/* Server images */}
-        {filePreview && (
-          <div className='relative w-full h-full border rounded-md overflow-hidden group'>
-            <Image
-              src={filePreview}
-              width={500}
-              height={500}
-              alt='preview image'
-              className='w-full h-full object-cover'
-            />
-            <button
-              type='button'
-              className='absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity'
-              aria-label='Remove image'
-            >
-              <X size={14} />
-            </button>
-          </div>
-        )}
-
         {/* Hidden file input */}
         <input
           type='file'
@@ -129,6 +109,26 @@ export const ImageUpload = ({
       </div>
 
       {!!message && <span className='text-red-500 text-sm'>{message}</span>}
+
+      {/* Server images */}
+      {filePreview && (
+        <div className='relative w-24 h-24 border rounded-md overflow-hidden group'>
+          <Image
+            src={filePreview}
+            width={500}
+            height={500}
+            alt='preview image'
+            className='w-full h-full object-cover'
+          />
+          <button
+            type='button'
+            className='absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity'
+            aria-label='Remove image'
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
 
       {!isHidePreview && (
         <div className='flex gap-2'>

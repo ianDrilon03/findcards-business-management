@@ -60,7 +60,7 @@ export function AddCategoryDialog(): JSX.Element {
     <Dialog open={isOpen} onOpenChange={() => toggleOpen?.(false, null)}>
       <DialogContent className='sm:max-w-[40rem]'>
         <DialogHeader>
-          <DialogTitle>Add New Category</DialogTitle>
+          <DialogTitle>Add Category</DialogTitle>
         </DialogHeader>
         <Input
           title='Category'
