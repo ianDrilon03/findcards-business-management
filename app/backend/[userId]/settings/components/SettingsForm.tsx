@@ -153,6 +153,7 @@ export function SettingsForm({ userId, ...data }: SettingsForm) {
         <CustomButton
           type='button'
           isLoading={isPending}
+          disabled={isPending}
           onClick={handleSubmit(onSubmit)}
         >
           <PencilIcon />
