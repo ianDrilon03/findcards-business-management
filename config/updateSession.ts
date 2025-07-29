@@ -47,14 +47,15 @@ export async function updateSession(request: NextRequest) {
     .single()
 
   const baseAdminURL = `/backend/${user?.id}`
-  // const baseUserURL = `/users/${user?.id}`
+  const baseUserURL = `/users/${user?.id}`
 
   const protectedAdminRoutes = [
     'dashboard',
     'businesses',
     'users',
     'category',
-    'prizes'
+    'prizes',
+    'settings'
   ]
 
   const isProtected = protectedAdminRoutes.some((route) =>
@@ -65,11 +66,17 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(new URL('/auth/login', request.url))
   }
 
-  // if (userData?.role === 'user' && user && pathname.endsWith('businesses')) {
-  //   return NextResponse.redirect(
-  //     new URL(`${baseUserURL}/businesses`, request.url)
-  //   )
-  // }
+  if (userData?.role === 'user' && pathname.startsWith('/backend')) {
+    return NextResponse.redirect(
+      new URL(`${baseUserURL}/businesses`, request.url)
+    )
+  }
+
+  if (userData?.role === 'admin' && pathname.startsWith('/users')) {
+    return NextResponse.redirect(
+      new URL(`${baseAdminURL}/businesses`, request.url)
+    )
+  }
 
   if (user && pathname === '/auth/login' && userData?.role === 'admin') {
     return NextResponse.redirect(

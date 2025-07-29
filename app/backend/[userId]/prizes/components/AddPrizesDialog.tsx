@@ -56,7 +56,9 @@ export function AddPrizesDialog(): JSX.Element {
 
   const resetVariable = (): void => {
     reset({
-      name: ''
+      name: '',
+      credit_cost: '',
+      status: null
     })
     router.refresh()
     toggleOpen?.(false, null)

@@ -92,7 +92,7 @@ export function BusinessView({
 
   return (
     <>
-      <Card className='max-w-5xl w-full mx-auto mt-14 p-0 text-primary'>
+      <Card className='p-0 text-primary'>
         <CardHeader className='p-0'>
           <Image
             src={businesses.image}
