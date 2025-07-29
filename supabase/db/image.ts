@@ -4,7 +4,7 @@ import { toast } from 'sonner'
 export const uploadImage = async (
   images: File[],
   supabase: SupabaseClient,
-  projectId: string,
+  id: string,
   bucket = 'business'
 ): Promise<{ imageUrls: string[] }> => {
   const imageUrls: string[] = []
@@ -12,7 +12,7 @@ export const uploadImage = async (
   if (images && images.length > 0) {
     for (const image of images) {
       const fileName = image?.name as string
-      const storageName = `${projectId}/${fileName}`
+      const storageName = `${id}/${fileName}`
 
       const { error: uploadError } = await supabase.storage
         .from(bucket)
@@ -28,6 +28,9 @@ export const uploadImage = async (
       }
 
       if (uploadError) {
+        toast.error('Error', {
+          description: uploadError.message
+        })
         throw new Error(`Image upload failed: ${uploadError.message}`)
       }
 
@@ -45,22 +48,46 @@ export const uploadImage = async (
   }
 }
 
+export const removeImageUponEdit = async (
+  supabase: SupabaseClient,
+  path: string,
+  bucket = 'business'
+): Promise<void> => {
+  try {
+    const { error: uploadError } = await supabase.storage
+      .from(bucket)
+      .remove([path])
+
+    if (uploadError) {
+      toast.error('Error', {
+        description: uploadError.message
+      })
+      throw new Error(`Image remove failed: ${uploadError.message}`)
+    }
+  } catch (error) {
+    throw error
+  }
+}
+
 export const removeImage = async (
   images: File[],
   supabase: SupabaseClient,
-  projectId: string,
+  id: string,
   bucket = 'business'
 ): Promise<void> => {
   if (images && images.length > 0) {
     for (const image of images) {
       const fileName = image?.name as string
-      const storageName = `${projectId}/${fileName}`
+      const storageName = `${id}/${fileName}`
 
       const { error: uploadError } = await supabase.storage
         .from(bucket)
         .remove([storageName])
 
       if (uploadError) {
+        toast.error('Error', {
+          description: uploadError.message
+        })
         throw new Error(`Image remove failed: ${uploadError.message}`)
       }
     }

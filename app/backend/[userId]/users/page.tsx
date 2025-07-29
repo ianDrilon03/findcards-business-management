@@ -18,10 +18,7 @@ export default async function Users(): Promise<JSX.Element> {
   }
 
   return (
-    <Container
-      title='Manage Users'
-      description='You can manage users here (e.g, revoke, reinstate, ban, edit)'
-    >
+    <Container title='Manage Users' description='You can manage users here'>
       <UsersTable user={data} />
       <AddUserDialog />
     </Container>

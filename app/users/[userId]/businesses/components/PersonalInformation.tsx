@@ -135,6 +135,7 @@ export function PersonalInformation(): JSX.Element {
         <CustomButton
           type='button'
           onClick={handleSubmit(onSubmit)}
+          disabled={isPending}
           isLoading={isPending}
         >
           Submit

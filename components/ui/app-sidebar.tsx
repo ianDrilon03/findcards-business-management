@@ -6,7 +6,9 @@ import {
   // Command,
   // IdCard,
   Briefcase,
-  Users
+  Users,
+  VectorSquare,
+  Trophy
   // FileText,
   // LayoutDashboard
   // UsersRound,
@@ -50,6 +52,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         isActive: true
       },
       {
+        title: 'Category',
+        url: `/backend/${userData?.user?.id}/category`,
+        icon: VectorSquare,
+        isActive: true
+      },
+      {
+        title: 'Prizes',
+        url: `/backend/${userData?.user?.id}/prizes`,
+        icon: Trophy,
+        isActive: true
+      },
+      {
         title: 'Users',
         url: `/backend/${userData?.user?.id}/users`,
         icon: Users,
@@ -76,20 +90,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     ]
   }
 
-  const adminMenus =
-    userData?.user?.userRole === 'admin'
-      ? data.navMain
-      : data.navMain.filter(
-          (item) => !['Dashboard', 'Users', 'Activity Log'].includes(item.title)
-        )
-
   return (
     <Sidebar collapsible='icon' {...props}>
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={adminMenus} />
+        <NavMain items={data.navMain} />
         {/*<NavProjects projects={data.projects} />*/}
       </SidebarContent>
       <SidebarFooter>

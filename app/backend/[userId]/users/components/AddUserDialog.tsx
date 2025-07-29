@@ -129,6 +129,7 @@ export function AddUserDialog(): JSX.Element {
             <CustomButton
               type='button'
               onClick={handleSubmit(onSubmit)}
+              disabled={isPending}
               isLoading={isPending}
             >
               Create
