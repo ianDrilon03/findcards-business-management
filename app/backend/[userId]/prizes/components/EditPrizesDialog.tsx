@@ -1,6 +1,6 @@
 'use client'
 
-import { JSX, useTransition, useEffect } from 'react'
+import { JSX, useTransition, useEffect, useState } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -17,7 +17,6 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { ImageUpload } from '@/components/custom/ImageUpload'
-import { editCategory } from '@/supabase/db/category'
 import { useCreatePrizesDialog } from '@/service/create-prizes-dialog'
 import { useForm } from 'react-hook-form'
 import { Input } from '@/components/ui/input'
@@ -29,9 +28,14 @@ import { PrizesForm } from '@/lib/types/prizes'
 import { Controller } from 'react-hook-form'
 import { Label } from '@/components/ui/label'
 import { prizesStatus } from '../helpers/constant'
+import { useUser } from '@/context/AuthProvider'
+import { User } from '@supabase/supabase-js'
+import { editPrize } from '@/supabase/db/prizes'
 
 export function EditPrizesDialog(): JSX.Element {
   const router = useRouter()
+  const { user } = useUser() as { user: User }
+  const [oldImagePath, setOldImagePath] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
 
   const {
@@ -62,11 +66,14 @@ export function EditPrizesDialog(): JSX.Element {
     toggleOpen?.(false, null)
   }
 
-  const onSubmit = async (data: { name: string }): Promise<void> => {
+  const onSubmit = async (data: PrizesForm): Promise<void> => {
     startTransition(async () => {
-      const { name } = data
-
-      await editCategory(name, prizesData?.id as string)
+      await editPrize(
+        data,
+        user.id,
+        prizesData?.id as string,
+        oldImagePath as string
+      )
       resetVariable()
     })
   }
@@ -79,6 +86,12 @@ export function EditPrizesDialog(): JSX.Element {
         credit_cost: prizesData?.creditCost.toString(),
         image: prizesData?.image
       })
+
+      if (typeof prizesData?.image === 'string') {
+        const path = prizesData?.image.split('/prizes/')[1]
+
+        setOldImagePath(path)
+      }
     }
   }, [reset, prizesData])
 

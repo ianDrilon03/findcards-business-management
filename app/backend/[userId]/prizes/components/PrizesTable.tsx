@@ -39,12 +39,12 @@ import {
 import { Avatar, AvatarImage } from '@/components/ui/avatar'
 import { format } from 'date-fns'
 import { Badge } from '@/components/ui/badge'
-import { archivedCategory } from '@/supabase/db/category'
 import { DialogAlert } from '@/components/custom/DialogAlert'
 import { Button } from '@/components/ui/button'
 import { useCreatePrizesDialog } from '@/service/create-prizes-dialog'
 import { useShallow } from 'zustand/react/shallow'
 import { PrizesTable } from '@/lib/types/prizes'
+import { archivedPrize } from '@/supabase/db/prizes'
 
 interface PrizesTableType {
   prizes: PrizesTable[]
@@ -60,7 +60,7 @@ export function PrizeTable({ prizes: data }: PrizesTableType) {
   const [rowSelection, setRowSelection] = React.useState({})
   const [isPending, startTransition] = React.useTransition()
   const {
-    data: categoryData,
+    data: prizeData,
     open,
     toggleOpenDialog
   } = useCreatePrizesDialog(
@@ -71,9 +71,9 @@ export function PrizeTable({ prizes: data }: PrizesTableType) {
     }))
   )
 
-  const onArchiveCategory = async (): Promise<void> => {
+  const onArchivePrize = async (): Promise<void> => {
     startTransition(async () => {
-      await archivedCategory(categoryData?.id as string)
+      await archivedPrize(prizeData?.id as string)
     })
   }
 
@@ -332,10 +332,10 @@ export function PrizeTable({ prizes: data }: PrizesTableType) {
         </div>
       </div>
       <DialogAlert
-        open={open && !categoryData?.name}
+        open={open && !prizeData?.name}
         title='Remove Prizes'
         description='Do you want to remove this prizes?'
-        callback={onArchiveCategory}
+        callback={onArchivePrize}
         cancel={() => toggleOpenDialog?.(false, null)}
         isLoading={isPending}
         type='error'

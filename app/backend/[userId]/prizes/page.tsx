@@ -14,6 +14,7 @@ export default async function PrizesPage(): Promise<JSX.Element> {
     .select(
       'id, claimed_by:users(name, email, gender, address, phone, avatar), name, image, credit_cost, status, created_at, updated_at'
     )
+    .is('archived_at', null)
     .returns<PrizesTable[]>()
 
   if (error) {
