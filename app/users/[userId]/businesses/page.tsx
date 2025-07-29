@@ -1,4 +1,5 @@
 import { JSX } from 'react'
+import { Container } from '@/components/custom/Container'
 import { createClient } from '@/config'
 import { BusinessAction } from './components/BusinessAction'
 import { AddBusinessDialog } from './components/AddBusinessDialog'
@@ -28,7 +29,11 @@ export default async function Businesses({
   }
 
   return (
-    <div className='my-8 space-y-2'>
+    <Container
+      title='Businesses'
+      description='You can see verified and unverified businesses here'
+      className='container space-y-2'
+    >
       {data.length > 0 && <BusinessAction />}
       <section className='grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-2'>
         {data.map((item) => (
@@ -37,6 +42,6 @@ export default async function Businesses({
       </section>
       {data.length <= 0 && <EmptyPlaceholder />}
       <AddBusinessDialog />
-    </div>
+    </Container>
   )
 }

@@ -129,3 +129,30 @@ export const archivedPrize = async (id: string): Promise<void> => {
     throw error
   }
 }
+
+export const claimingPrize = async (
+  userId: string,
+  prizeId: string,
+  creditCost: number
+): Promise<void> => {
+  try {
+    const supabase = createClient()
+
+    const { error } = await supabase.rpc('claim_prize', {
+      p_user_id: userId,
+      p_prize_id: prizeId,
+      p_credit_cost: creditCost
+    })
+
+    if (error) {
+      throw error.message
+    }
+
+    toast('Successfully', {
+      description:
+        'Successfully claimed prize, wait for the information when getting your prize.'
+    })
+  } catch (error) {
+    throw error
+  }
+}

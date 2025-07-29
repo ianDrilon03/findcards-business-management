@@ -1,4 +1,5 @@
 import { JSX } from 'react'
+import { Container } from '@/components/custom/Container'
 import { createClient } from '@/config'
 import { BusinessDetailsDB } from '@/lib/types/business'
 import { BusinessView } from '@/app/components/BusinessView'
@@ -27,5 +28,13 @@ export default async function ViewBusiness({
     throw error.message
   }
 
-  return <BusinessView {...data} />
+  return (
+    <Container
+      title='Businesses Info'
+      description='You can see Business Information here'
+      className='container space-y-2'
+    >
+      <BusinessView {...data} />
+    </Container>
+  )
 }

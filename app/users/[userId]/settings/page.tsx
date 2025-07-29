@@ -1,5 +1,5 @@
 import { JSX } from 'react'
-import { PreviousButton } from '@/components/custom/PreviousButton'
+import { Container } from '@/components/custom/Container'
 import { getUserDetails } from '@/supabase/db/auth'
 import { SettingsForm } from '@/app/backend/[userId]/settings/components/SettingsForm'
 
@@ -12,9 +12,12 @@ export default async function SettingsPage({
   const userData = await getUserDetails(userId)
 
   return (
-    <div className='mt-4 max-w-4xl mx-auto space-y-2'>
-      <PreviousButton />
+    <Container
+      title='Profile Settings'
+      description='You can edit your profile settings here'
+      className='mt-4 max-w-4xl mx-auto space-y-2'
+    >
       <SettingsForm {...userData.users} userId={userId} />
-    </div>
+    </Container>
   )
 }

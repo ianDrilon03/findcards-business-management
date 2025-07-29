@@ -22,10 +22,14 @@ export const Navigation = ({ users, credits }: UserCredits): JSX.Element => {
   const activeTeam = appName(email as string)[0]
   const baseUrl = pathname.split('/')
 
+  const defaultPath = `${process.env.NEXT_PUBLIC_APP_URL}/users/${baseUrl[2]}`
+
   const redirectSettings = (): void => {
-    permanentRedirect(
-      `${process.env.NEXT_PUBLIC_APP_URL}/users/${baseUrl[2]}/settings`
-    )
+    permanentRedirect(`${defaultPath}/settings`)
+  }
+
+  const redirectPrizes = (): void => {
+    permanentRedirect(`${defaultPath}/redeem-prizes`)
   }
 
   return (
@@ -76,7 +80,7 @@ export const Navigation = ({ users, credits }: UserCredits): JSX.Element => {
               Settings
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => redirectPrizes()}>
               <TicketCheck />
               Redeem Prizes
             </DropdownMenuItem>
