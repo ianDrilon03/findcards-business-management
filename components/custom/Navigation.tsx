@@ -22,7 +22,7 @@ export const Navigation = ({ users, credits }: UserCredits): JSX.Element => {
   const activeTeam = appName(email as string)[0]
   const baseUrl = pathname.split('/')
 
-  const defaultPath = `${process.env.NEXT_PUBLIC_APP_URL}/users/${baseUrl[2]}`
+  const defaultPath = `/users/${baseUrl[2]}`
 
   const redirectSettings = (): void => {
     permanentRedirect(`${defaultPath}/settings`)

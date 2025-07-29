@@ -34,9 +34,7 @@ export function NavUser({
   const baseUrl = pathname.split('/')
 
   const redirectSettings = (): void => {
-    permanentRedirect(
-      `${process.env.NEXT_PUBLIC_APP_URL}/backend/${baseUrl[2]}/settings`
-    )
+    permanentRedirect(`/backend/${baseUrl[2]}/settings`)
   }
 
   return (
