@@ -72,6 +72,9 @@ CREATE TABLE prizes (
 
  INSERT INTO storage.buckets (id, name, public, file_size_limit)
         VALUES ('prizes', 'prizes', TRUE, 5242880); -- 5MB limit
+    
+ INSERT INTO storage.buckets (id, name, public, file_size_limit)
+        VALUES ('avatars', 'avatars', TRUE, 5242880); -- 5MB limit
 
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE businesses ENABLE ROW LEVEL SECURITY;
@@ -80,15 +83,20 @@ ALTER TABLE user_credits ENABLE ROW LEVEL SECURITY;
 ALTER TABLE business_personal_details ENABLE ROW LEVEL SECURITY;
 ALTER TABLE category ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Upload Select business " ON storage.objects FOR SELECT TO public USING (bucket_id = 'business');
+CREATE POLICY "Upload Select business" ON storage.objects FOR SELECT TO public USING (bucket_id = 'business');
 CREATE POLICY "Upload Insert business" ON storage.objects FOR INSERT TO public WITH CHECK (bucket_id = 'business');
 CREATE POLICY "Upload Update business" ON storage.objects FOR UPDATE TO public USING (bucket_id = 'business');
 CREATE POLICY "Upload Delete business" ON storage.objects FOR DELETE TO public USING (bucket_id = 'business');
 
-CREATE POLICY "Upload Select prizes " ON storage.objects FOR SELECT TO public USING (bucket_id = 'prizes');
+CREATE POLICY "Upload Select prizes" ON storage.objects FOR SELECT TO public USING (bucket_id = 'prizes');
 CREATE POLICY "Upload Insert prizes" ON storage.objects FOR INSERT TO public WITH CHECK (bucket_id = 'prizes');
 CREATE POLICY "Upload Update prizes" ON storage.objects FOR UPDATE TO public USING (bucket_id = 'prizes');
 CREATE POLICY "Upload Delete prizes" ON storage.objects FOR DELETE TO public USING (bucket_id = 'prizes');
+
+CREATE POLICY "Upload Select avatars" ON storage.objects FOR SELECT TO public USING (bucket_id = 'avatars');
+CREATE POLICY "Upload Insert avatars" ON storage.objects FOR INSERT TO public WITH CHECK (bucket_id = 'avatars');
+CREATE POLICY "Upload Update avatars" ON storage.objects FOR UPDATE TO public USING (bucket_id = 'avatars');
+CREATE POLICY "Upload Delete avatars" ON storage.objects FOR DELETE TO public USING (bucket_id = 'avatars');
 
 CREATE POLICY category_read_all ON category 
   FOR ALL
