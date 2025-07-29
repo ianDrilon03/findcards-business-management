@@ -1,6 +1,6 @@
 import { toast } from 'sonner'
 import { createClient } from '@/config/client'
-import { uploadImage, removeImage } from './image'
+import { uploadImage, removeImage, removeImageUponEdit } from './image'
 import { User } from '@/lib/types/user'
 import { SettingsForm } from './auth'
 import { permanentRedirect } from 'next/navigation'
@@ -13,21 +13,32 @@ export interface UserForm
 export const updateUser = async (
   data: SettingsForm,
   image: File[],
-  userId: string
+  userId: string,
+  oldPath: string | null
 ): Promise<void> => {
   try {
+    let imageUrl = null
     const supabase = createClient()
 
-    const { imageUrls } = await uploadImage(
-      image,
-      supabase,
-      `${userId}/${data.name}`,
-      'avatars'
-    )
+    if (!!oldPath) {
+      console.log('trigger')
+      await removeImageUponEdit(supabase, oldPath as string, 'avatars')
+    }
+
+    if (Array.isArray(image)) {
+      const { imageUrls } = await uploadImage(
+        image,
+        supabase,
+        `${userId}/${data.name}`,
+        'avatars'
+      )
+
+      imageUrl = imageUrls[0]
+    }
 
     const { error } = await supabase
       .from('users')
-      .update({ ...data, avatar: imageUrls[0] })
+      .update({ ...data, avatar: imageUrl })
       .eq('id', userId)
 
     if (error) {
