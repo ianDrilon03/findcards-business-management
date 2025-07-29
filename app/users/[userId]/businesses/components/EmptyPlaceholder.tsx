@@ -16,10 +16,10 @@ export function EmptyPlaceholder({
   const description =
     isShowButton && 'Add your first business by clicking the button below 😊'
 
-  const title = isShowButton ? 'Add Your First Business' : 'No Business Found'
+  const title = isShowButton ? 'Add Your First Business' : 'No Data Found'
 
   return (
-    <div className='flex flex-col items-center justify-center h-[85vh]'>
+    <div className='flex flex-col items-center justify-center h-full'>
       <Image
         src='/images/empty-data.svg'
         alt='empty placeholder'

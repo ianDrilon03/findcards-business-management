@@ -4,6 +4,7 @@ import { createClient } from '@/config'
 import { PrizesCard } from './components/PrizesCard'
 import { PrizesTable } from '@/lib/types/prizes'
 import { Container } from '@/components/custom/Container'
+import { EmptyPlaceholder } from '../businesses/components/EmptyPlaceholder'
 
 export default async function RedeemPrizes({
   params
@@ -28,11 +29,13 @@ export default async function RedeemPrizes({
     throw error.message
   }
 
+  const hasData = data.length > 0
+
   return (
     <Container
       title='Available Prizes'
       description='Redeem your credits for exciting prizes'
-      childClassName='grid xl:grid-cols-4 md:grid-cols-2 xs:grid-cols-1 gap-2'
+      childClassName={`${hasData ? 'grid xl:grid-cols-4 md:grid-cols-2 xs:grid-cols-1 gap-2' : 'w-full'}`}
     >
       {data.map((item) => (
         <PrizesCard
@@ -42,6 +45,12 @@ export default async function RedeemPrizes({
           userId={userId}
         />
       ))}
+
+      {!hasData && (
+        <div className='flex items-center justify-center w-full'>
+          <EmptyPlaceholder isShowButton={false} />
+        </div>
+      )}
     </Container>
   )
 }
