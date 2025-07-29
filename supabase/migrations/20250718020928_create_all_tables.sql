@@ -206,9 +206,9 @@ CREATE POLICY user_credits_admin_access ON user_credits
     FOR ALL
     TO AUTHENTICATED
     USING(
-      (((SELECT users_1.role
-         FROM public.users users_1
-        WHERE (users_1.id = auth.uid())))::text = 'admin'::text) 
+      ((( SELECT users_1.role
+         FROM users users_1
+        WHERE (users_1.id = auth.uid())) = 'admin'::text) OR (auth.uid() = user_id))
     );
 
 
