@@ -329,10 +329,9 @@ BEGIN
     IF user_credits >= p_credit_cost THEN
         -- Update prize
         UPDATE prizes
-        SET available = false,
-            claimed_by = p_user_id
+        SET claimed_by = p_user_id
         WHERE id = p_prize_id
-        AND available = true;
+        AND status = 'published';
 
         -- Deduct credits
         UPDATE user_credits
