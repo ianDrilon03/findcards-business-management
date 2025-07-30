@@ -55,7 +55,8 @@ export async function updateSession(request: NextRequest) {
     'users',
     'category',
     'prizes',
-    'settings'
+    'settings',
+    'redeem-prizes'
   ]
 
   const isProtected = protectedAdminRoutes.some((route) =>
