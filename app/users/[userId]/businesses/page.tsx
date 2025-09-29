@@ -18,11 +18,17 @@ export default async function Businesses({
   const { data, error } = await supabase
     .from('business_personal_details')
     .select(
-      `id, businesses(name, address, phone, address, image, status), category(name)`
+      `id, referred_by(id, name, email),
+      businesses(name, address, phone, address, image, status), category(name)`
     )
     .order('created_at', { ascending: false })
     .eq('referred_by', userId)
-    .returns<Pick<BusinessDetailsDB, 'businesses' | 'category' | 'id'>[]>()
+    .returns<
+      Pick<
+        BusinessDetailsDB,
+        'businesses' | 'category' | 'id' | 'referred_by'
+      >[]
+    >()
 
   if (error) {
     throw error.message
