@@ -16,6 +16,7 @@ export default async function ViewBusiness({
     .from('business_personal_details')
     .select(
       `id, first_name, last_name, personal_email, phone, 
+      referred_by(id, name, email),
       businesses(id, name, address, phone, address, image, status, email, website, region, social_media ), 
       category(name)`
     )

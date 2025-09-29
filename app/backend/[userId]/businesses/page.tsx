@@ -11,11 +11,18 @@ export default async function BusinessesPage(): Promise<JSX.Element> {
   const { data, error } = await supabase
     .from('business_personal_details')
     .select(
-      `id, businesses(id, name, address, phone, address, image, status), category(name)`
+      `id, 
+      referred_by(id, name, email),
+      businesses(id, name, address, phone, address, image, status), category(name)`
     )
     .order('created_at', { ascending: false })
     .is('archived_at', null)
-    .returns<Pick<BusinessDetailsDB, 'businesses' | 'category' | 'id'>[]>()
+    .returns<
+      Pick<
+        BusinessDetailsDB,
+        'businesses' | 'category' | 'id' | 'referred_by'
+      >[]
+    >()
 
   if (error) {
     throw error.message

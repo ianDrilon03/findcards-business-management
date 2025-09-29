@@ -10,7 +10,8 @@ import {
   InstagramIcon,
   EllipsisVertical,
   VerifiedIcon,
-  Trash
+  Trash,
+  User
 } from 'lucide-react'
 import {
   DropdownMenu,
@@ -207,6 +208,13 @@ export function BusinessView({
                   <div className='text-gray-500 flex items-center gap-2'>
                     <Mail className='w-5 h-5' />
                     <span className='text-md w-1/2'>{businesses.email}</span>
+                  </div>
+
+                  <div className='text-gray-500 flex items-center gap-2'>
+                    <User className='w-5 h-5' />
+                    <span className='text-md w-1/2'>
+                      {referredBy.name || referredBy.email}
+                    </span>
                   </div>
                 </section>
               </div>

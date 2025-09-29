@@ -5,15 +5,19 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { BusinessDetailsDB } from '@/lib/types/business'
 import { usePathname } from 'next/navigation'
-import { MapPin, Phone } from 'lucide-react'
+import { MapPin, Phone, User } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 
 export function BusinessCard({
   businesses,
   category,
-  id
-}: Pick<BusinessDetailsDB, 'businesses' | 'category' | 'id'>): JSX.Element {
+  id,
+  referred_by: referredBy
+}: Pick<
+  BusinessDetailsDB,
+  'businesses' | 'category' | 'id' | 'referred_by'
+>): JSX.Element {
   const { image, name, phone, address, status } = businesses
 
   const pathname = usePathname()
@@ -44,6 +48,11 @@ export function BusinessCard({
               <p className='text-gray-400 flex items-center gap-1 text-sm'>
                 <MapPin className='w-4 h-4' />
                 {address}
+              </p>
+
+              <p className='text-gray-400 flex items-center gap-1 text-sm'>
+                <User className='w-4 h-4' />
+                {referredBy.name || referredBy.email}
               </p>
             </div>
           </CardContent>
