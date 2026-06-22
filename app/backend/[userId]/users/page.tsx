@@ -3,6 +3,8 @@ import { createClient } from '@/config'
 import { Container } from '@/components/custom/Container'
 import { UsersTable } from './components/UserTable'
 import { AddUserDialog } from './components/AddUserDialog'
+import { EditUserDialog } from './components/EditUserDialog'
+import { ResetPasswordDialog } from './components/ResetPasswordDialog'
 
 export default async function Users(): Promise<JSX.Element> {
   const supabase = await createClient()
@@ -21,6 +23,8 @@ export default async function Users(): Promise<JSX.Element> {
     <Container title='Manage Users' description='You can manage users here'>
       <UsersTable user={data} />
       <AddUserDialog />
+      <EditUserDialog />
+      <ResetPasswordDialog />
     </Container>
   )
 }

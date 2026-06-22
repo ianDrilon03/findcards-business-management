@@ -13,11 +13,18 @@ import {
   useReactTable,
   VisibilityState
 } from '@tanstack/react-table'
-import { ChevronDown } from 'lucide-react'
+import {
+  ChevronDown,
+  EllipsisVertical,
+  Pencil,
+  KeyRound,
+  Trash
+} from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
@@ -38,6 +45,13 @@ import { avatarName } from '@/helpers/avatarName'
 import { updateRole } from '@/supabase/db/authClient'
 import { useRouter } from 'next/navigation'
 import { useCreateUserDialog } from '@/service/create-user-dialog'
+import {
+  useUserActionDialog,
+  UserActionData
+} from '@/service/user-action-dialog'
+import { DialogAlert } from '@/components/custom/DialogAlert'
+import { useShallow } from 'zustand/react/shallow'
+import { toast } from 'sonner'
 
 type UserData = Omit<User, 'password'>
 
@@ -53,11 +67,51 @@ export function UsersTable({ user: data }: UserTableData) {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+  const [isPending, startTransition] = React.useTransition()
   const toggleOpenDialog = useCreateUserDialog(
     (state) => state.toggleOpenDialog
   )
 
+  const {
+    open,
+    mode,
+    user: selectedUser,
+    toggleUserAction
+  } = useUserActionDialog(
+    useShallow((state) => ({
+      open: state.open,
+      mode: state.mode,
+      user: state.user,
+      toggleUserAction: state.toggleOpenDialog
+    }))
+  )
+
   const router = useRouter()
+
+  const onDeleteUser = async (): Promise<void> => {
+    startTransition(async () => {
+      const res = await fetch('/api/deleteUser', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: selectedUser?.id })
+      })
+
+      const response = await res.json()
+
+      if (!res.ok) {
+        toast.error('Error!', {
+          description: response.error || 'Something went wrong'
+        })
+        return
+      }
+
+      toast('Successfully', {
+        description: 'Successfully deleted user.'
+      })
+      toggleUserAction?.(false, null, null)
+      router.refresh()
+    })
+  }
 
   const columns: ColumnDef<UserData>[] = React.useMemo(
     () => [
@@ -136,30 +190,63 @@ export function UsersTable({ user: data }: UserTableData) {
         cell: ({ row }) => (
           <div className='lowercase'>{row.getValue('gender')}</div>
         )
+      },
+      {
+        id: 'actions',
+        header: 'Actions',
+        enableHiding: false,
+        cell: ({ row }) => (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant='ghost' className='h-8 w-8 p-0'>
+                <span className='sr-only'>Open menu</span>
+                <EllipsisVertical />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align='end'>
+              <DropdownMenuItem
+                onClick={() =>
+                  toggleUserAction?.(
+                    true,
+                    'edit',
+                    row.original as UserActionData
+                  )
+                }
+              >
+                <Pencil />
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() =>
+                  toggleUserAction?.(
+                    true,
+                    'reset',
+                    row.original as UserActionData
+                  )
+                }
+              >
+                <KeyRound />
+                Reset Password
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className='text-red-500'
+                onClick={() =>
+                  toggleUserAction?.(
+                    true,
+                    'delete',
+                    row.original as UserActionData
+                  )
+                }
+              >
+                <Trash className='text-red-500' />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )
       }
-      // {
-      //   id: 'actions',
-      //   header: 'Actions',
-      //   enableHiding: false,
-      //   cell: () => (
-      //     <DropdownMenu>
-      //       <DropdownMenuTrigger asChild>
-      //         <Button variant='ghost' className='h-8 w-8 p-0'>
-      //           <span className='sr-only'>Open menu</span>
-      //           <MoreHorizontal />
-      //         </Button>
-      //       </DropdownMenuTrigger>
-      //       <DropdownMenuContent align='end'>
-      //         <DropdownMenuItem>
-      //           <Shield />
-      //           Make admin
-      //         </DropdownMenuItem>
-      //       </DropdownMenuContent>
-      //     </DropdownMenu>
-      //   )
-      // }
     ],
-    [router]
+    [router, toggleUserAction]
   )
 
   const table = useReactTable({
@@ -295,6 +382,15 @@ export function UsersTable({ user: data }: UserTableData) {
           </Button>
         </div>
       </div>
+
+      <DialogAlert
+        open={open && mode === 'delete' && !!selectedUser}
+        cancel={() => toggleUserAction?.(false, null, null)}
+        callback={onDeleteUser}
+        isLoading={isPending}
+        title='Delete User'
+        description={`Are you sure you want to delete ${selectedUser?.email}? This will remove their account and unlink any referred businesses and claimed prizes. This action cannot be undone.`}
+      />
     </div>
   )
 }
